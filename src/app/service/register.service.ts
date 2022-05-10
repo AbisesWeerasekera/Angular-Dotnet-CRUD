@@ -7,7 +7,25 @@ import { Register } from '../models/register.model';
   providedIn: 'root'
 })
 export class RegisterService {
-formData:Register;
+  formData: Register;
 
-  constructor() { }
+  readonly rootURL = "https://localhost:44359/api/"
+  constructor(private http: HttpClient) { }
+
+  //Load and Reload data
+  loadUsers() {
+    return this.http.get(this.rootURL + 'Users');
+  }
+
+  InsertUser() {
+    return this.http.post(this.rootURL + '', this.formData);
+  }
+
+  UpdateUser() {
+    return this.http.post(this.rootURL + 'Users/' + this.formData.Id, this.formData);
+  }
+
+  DeleteUser(Id){
+    return this.http.delete(this.rootURL+'Users/'+Id);
+  }
 }

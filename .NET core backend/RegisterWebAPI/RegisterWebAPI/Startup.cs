@@ -27,7 +27,22 @@ namespace RegisterWebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+      //services.AddControllers();
+
+      //Build a json serializer after installing the "microsoft.asp.netcore.mvc.newtonsoftjson" nuget package
+      services.AddControllers().AddNewtonsoftJson(options =>
+      {
+        options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+      }).AddXmlDataContractSerializerFormatters();
+
+
+      //use cors
+      //to accept headers which come across localhost 4200 origin -->After installing microsoft.asp.net.core.cors package
+      services.AddCors(options =>
+      {
+        options.AddPolicy("CoreApi", builder => builder.WithOrigins("http://localhost:4200/").AllowAnyHeader().AllowAnyMethod());
+      });
 
       //create a new database service after adding the property(Users.cs class) to the RegisterDbContext class
       //Using registerDbContext class and connection string can create a database service
@@ -48,6 +63,8 @@ namespace RegisterWebAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
+      //Add the created core in line number 32-45
+      app.UseCors("CoreApi");
 
             app.UseAuthorization();
 
