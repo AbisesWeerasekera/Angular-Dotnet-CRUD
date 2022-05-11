@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Register } from '../models/register.model';
 import { RegisterService } from '../service/register.service';
-
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -13,7 +13,7 @@ export class RegisterComponent implements OnInit {
   userList: {};
 
   //if we make it private , the component.html can't access it.
-  constructor(public _registerService: RegisterService) { }
+  constructor(public _registerService: RegisterService,private toastr: ToastrService) { }
 
   ngOnInit() {
     this.resetForm();
@@ -59,6 +59,7 @@ export class RegisterComponent implements OnInit {
   InsertUser() {
     this._registerService.InsertUser().subscribe(
       (res: any) => {
+        this.toastr.success("Record Inserted","User Registration");
         this.loadUsers();
         console.log("Success");
       },
@@ -71,6 +72,7 @@ export class RegisterComponent implements OnInit {
   UpdateUser() {
     this._registerService.InsertUser().subscribe(
       (res: any) => {
+        this.toastr.info("Record Updated","User Registration");
         this.loadUsers();
         console.log("Success");
       },
@@ -86,15 +88,18 @@ export class RegisterComponent implements OnInit {
   }
 
   DeleteUser(Id) {
-    this._registerService.DeleteUser(Id).subscribe(
-      (res: any) => {
-        console.log("deleted");
-        this.loadUsers();
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+    if(confirm("Are you sure")){
+      this._registerService.DeleteUser(Id).subscribe(
+        (res: any) => {
+          this.toastr.warning("Record Inserted","User Registration");
+          console.log("deleted");
+          this.loadUsers();
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+    }
   }
 
 }
